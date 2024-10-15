@@ -34,4 +34,16 @@ export default [
     },
     extends: ["plugin:jest/recommended"],
   },
+  {
+    files: ["**/*.cy.js"],
+    env: {
+      "cypress/globals": true,
+    },
+    plugins: ["cypress"],
+    extends: ["plugin:cypress/recommended"],
+    rules: {
+      "cypress/no-unnecessary-waiting": "off",
+      "no-unused-vars": "off",
+    },
+  },
 ];
