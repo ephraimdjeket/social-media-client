@@ -1,5 +1,5 @@
 /* eslint-env jest */
-/* eslint-disable no-undef */
+ 
 
 import { apiPath } from "../constants.js";
 import { save } from "../../storage/index.js";
@@ -15,14 +15,8 @@ const mockPassword = "hahaha12345678";
 // Mock fetch
 global.fetch = jest.fn((url, options) => {
   if (
-    url ===
-      `
-        
-        
-        
-        
-        ${apiPath}/social/auth/login` &&
-    options.method === "post"
+    url === `${apiPath}/social/auth/login` &&
+    options.method.toLowerCase() === "post"
   ) {
     return Promise.resolve({
       ok: true,
@@ -43,7 +37,6 @@ global.fetch = jest.fn((url, options) => {
   });
 });
 
-// Mock of the localstorage function
 jest.mock("../../storage/index.js", () => ({
   save: jest.fn(),
   remove: jest.fn(),
@@ -73,5 +66,18 @@ describe("login function", () => {
       banner: mockBanner,
       avatar: mockAvatar,
     });
+  });
+
+  it("should throw an error for unauthorized login", async () => {
+    global.fetch.mockImplementationOnce(() =>
+      Promise.resolve({
+        ok: false,
+        statusText: "Unauthorized",
+      }),
+    );
+
+    await expect(login("wrongEmail", "wrongPassword")).rejects.toThrow(
+      "Unauthorized",
+    );
   });
 });
